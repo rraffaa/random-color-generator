@@ -1,7 +1,7 @@
 # Random Color Generator
 
 ## Description
-    A web application that generates random colors, lets users save favorite colors, and organize them into custom palettes.
+A web application that generates random colors, lets users save favorite colors, and organize them into custom palettes.
 
 ## Features
 - **Random Color Generation**: This tool allows for the creation of unique colors for use in graphic design, web design, and artistic projects.
@@ -15,7 +15,7 @@
 4. **View History**: Review your generated color history to copy and use useful colors again.
 
 ## License
-    This project is licensed under the Apache License 2.0. See the [LICENSE](./LICENSE) file for more details.
+This project is licensed under the Apache License 2.0. See the [LICENSE](./LICENSE) file for more details.
 
 ## Installation
 
@@ -30,4 +30,4 @@
 3. Open the index.html in your browser to start using the application.
 
 ## Contributing
-    Feel free to fork this repository and contribute with improvements, bug fixes, and new features. Follow best practices for code quality and documentation.
+Feel free to fork this repository and contribute with improvements, bug fixes, and new features. Follow best practices for code quality and documentation.

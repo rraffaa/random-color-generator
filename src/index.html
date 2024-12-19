@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Color Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      transition: background-color 0.5s ease;
+    }
+    button {
+      padding: 14px 28px;
+      font-size: 19px;
+      margin: 20px;
+      cursor: pointer;
+      background-color: black;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+    .color-code {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .copy-btn {
+      margin-left: 15px;
+      padding: 5px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      background-color: black;
+      color: white;
+    }
+
+    .copy-message {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background-color: #000;
+      color: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .copy-message.show {
+      opacity: 1;
+    }
+
+
+    .history-container {
+      margin-top: 30px;
+    }
+
+    /* Style for the description */
+    .description {
+      margin: 0 auto;
+      max-width: 600px;
+      padding-left: 20px;
+      padding-right: 20px;
+      text-align: justify;
+      font-size: 19px;
+    }
+
+    /* Style for history list items (rectangles) */
+    .history-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 5px 0;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: #fff;
+      color: #333;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 560px; 
+      margin: 10px auto; 
+    }
+    /* Hover effect for history list items */
+    .history-list li:hover {
+      transform: scale(1.05);
+    }
+    /* Favorite button style */
+    .favorite-btn {
+      margin-left: 10px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 24px; /* Increased size for the heart icon */
+    }
+    .favorite-btn .heart-outline {
+      color: black;
+    }
+    .favorite-btn .heart-filled {
+      color: red;
+    }
+    .favorites-link {
+      margin-top: 10px;
+      display: block;
+      text-decoration: none;
+      color: white;
+      background-color: black;
+      padding: 5px 15px;
+      border-radius: 4px;
+      font-size: 14px;
+      width: fit-content;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      color: #000; 
+    }
+  </style>
+</head>
+<body>
+  <h1>Random Color Generator</h1>
+  <p class="description">This website is a simple tool to generate random colors, useful for graphic design, web design, and artistic projects. Designers and developers can use the generated colors to enhance their creative processes. You can copy, favorite, and view a history of your generated colors.</p>
+  
+  <button onclick="changeColor()">Repaint!</button>
+  
+  <div class="color-code">
+    <span id="colorCode">#FFFFFF</span>
+    <button class="copy-btn" onclick="copyColor()">Copy</button>
+  </div>
+  
+  <button onclick="toggleHistory()">Color History</button>
+  <a href="favorites.html" class="favorites-link">Go to Favorites</a>
+  
+  <div class="history-container">
+    <ul id="historyList" class="history-list"></ul>
+  </div>
+  
+  <button onclick="clearHistory()">Clear History</button>
+
+  <script>
+    const history = JSON.parse(localStorage.getItem('history')) || [];
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+    // Generate a random hex color
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // Change background color and update UI
+    function changeColor(newColor = null) {
+      const color = newColor || getRandomColor();
+      document.body.style.backgroundColor = color;
+      document.getElementById('colorCode').textContent = color;
+
+      // Adjust text color based on background color
+      if (color === "#000000") {
+        document.querySelector('h1').style.color = "white";
+        document.querySelector('.description').style.color = "white";
+        document.getElementById('colorCode').style.color = "white"; 
+      } else {
+        document.querySelector('h1').style.color = "black";
+        document.querySelector('.description').style.color = "black";
+        document.getElementById('colorCode').style.color = "black";
+      }
+
+      // Add color to history if randomly generated
+      if (!newColor) {
+        history.unshift(color);
+        if (history.length > 40) history.pop();  // Keep the last 40 colors
+        localStorage.setItem('history', JSON.stringify(history));
+      }
+      updateHistoryList();
+    }
+
+    // Copy the color code to clipboard
+    function copyColor() {
+      const colorCode = document.getElementById('colorCode').textContent;
+      navigator.clipboard.writeText(colorCode)
+        .then(() => alert(`Color ${colorCode} copied to clipboard!`))
+        .catch(err => alert('Failed to copy color: ' + err));
+    }
+
+    // Toggle display of the color history list
+    function toggleHistory() {
+      const historyList = document.getElementById('historyList');
+      historyList.style.display = historyList.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Update the UI with the history of colors
+    function updateHistoryList() {
+      const historyList = document.getElementById('historyList');
+      historyList.innerHTML = '';
+      history.forEach(color => {
+        const listItem = document.createElement('li');
+        listItem.textContent = color;
+        listItem.style.backgroundColor = color;
+
+        listItem.onclick = () => changeColor(color);
+
+        // Create favorite button for each color
+        const favoriteBtn = document.createElement('button');
+        favoriteBtn.className = 'favorite-btn';
+        favoriteBtn.innerHTML = '<span class="heart-outline">♡</span>';
+        favoriteBtn.onclick = (e) => {
+          e.stopPropagation(); // Prevent triggering the list item click
+          toggleFavorite(color, favoriteBtn);
+        };
+
+        listItem.appendChild(favoriteBtn);
+        historyList.appendChild(listItem);
+      });
+    }
+
+    // Toggle favorite state of a color
+    function toggleFavorite(color, button) {
+      const isFavorite = favorites.includes(color);
+      if (isFavorite) {
+        favorites.splice(favorites.indexOf(color), 1);
+        button.innerHTML = '<span class="heart-outline">♡</span>';
+      } else {
+        // Check to see if the color has already been added as favorite
+        if (!favorites.includes(color)) {
+          favorites.push(color);
+          button.innerHTML = '<span class="heart-filled">♥</span>';
+        }
+      }
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+    }
+
+    // Clear the color history
+    function clearHistory() {
+      history.length = 0;
+      localStorage.removeItem('history');
+      updateHistoryList();
+    }
+
+    updateHistoryList();
+  </script>
+</body>
+</html>
